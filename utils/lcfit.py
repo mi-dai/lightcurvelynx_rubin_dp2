@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 import sncosmo
+import numpy as np
 from astropy.table import Table
 from sfdmap2 import sfdmap
 from sncosmo.fitting import flatten_result
@@ -28,6 +29,7 @@ def fit_single_lc(
     usebands="all",
     mwebv_from_coord=True,
     passbands=None,
+    fit_z = True,
     **kwargs,
 ):
     # load lsst passbands and register to sncosmo
@@ -48,8 +50,12 @@ def fit_single_lc(
 
     if modelpars is None:
         modelpars = ["t0", "x0", "x1", "c"]
+    if fit_z:
+        modelpars += ["z"]
     if mpbounds is None:
         mpbounds = {}
+    if fit_z:
+        mpbounds["z"] = (np.max([0.,lc["z_est"]-0.3]),(lc["z_est"]+0.3))
 
     if "SFD_DIR" in os.environ:
         dustmap = sfdmap.SFDMap()
@@ -66,7 +72,10 @@ def fit_single_lc(
     lc["lightcurve"]["zp"] = 31.4
     lc["lightcurve"]["zpsys"] = "ab"
 
-    z = lc[lc_colmap["redshift"]]
+    if not fit_z:
+        z = lc[lc_colmap["redshift"]]
+    else:
+        z = lc["z_est"]
 
     if mwebv_from_coord:
         ra = lc.ra
