@@ -9,7 +9,7 @@ from sncosmo.fitting import flatten_result
 import os
 from lightcurvelynx.astro_utils.passbands import PassbandGroup
 
-os.environ["SFD_DIR"] = "/home/midai/mdai/sfdmap/sfddata-master"
+os.environ["SFD_DIR"] = "/global/homes/m/mdai/sfdmap/sfddata-master"
 
 logger = logging.getLogger(__name__)
 
